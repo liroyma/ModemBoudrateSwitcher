@@ -39,13 +39,21 @@ namespace ModemBoudrateSwitcher
             }
             if (ports.Length > 1)
             {
-                Console.WriteLine("Please Select a Port:");
-                for (int i = 0; i < ports.Length; i++)
+                while (string.IsNullOrEmpty(selectedport))
                 {
-                    Console.WriteLine("{1} {0}", ports[i], i + 1);
+                    Console.WriteLine("Please Select a Port:");
+                    for (int i = 0; i < ports.Length; i++)
+                    {
+                        Console.WriteLine("{1} {0}", ports[i], i + 1);
+                    }
+                    Console.WriteLine("---------------------------------");
+                    string res =Console.ReadLine();
+                    if(int.TryParse(res,out int pos))
+                    {
+                        if(pos > 0  && pos <= ports.Length)
+                         selectedport = ports[pos - 1];
+                    }
                 }
-                Console.WriteLine("---------------------------------");
-                Console.ReadLine();
 
             }
             else
@@ -58,6 +66,9 @@ namespace ModemBoudrateSwitcher
             port.StopBits = StopBits.One;
             port.Handshake = Handshake.None;
             port.Parity = Parity.None;
+            port.DtrEnable = true;
+            port.RtsEnable = true;
+            port.WriteTimeout = 1000;
             port.DataReceived += Port_DataReceived;
             Console.WriteLine("Openning Port {0}, BoudRate {1}....", selectedport, boudfrom);
             port.Open();
@@ -95,6 +106,9 @@ namespace ModemBoudrateSwitcher
             port.StopBits = StopBits.One;
             port.Handshake = Handshake.None;
             port.Parity = Parity.None;
+            port.DtrEnable = true;
+            port.RtsEnable = true;
+            port.WriteTimeout = 1000;
             port.DataReceived += Port_DataReceived1;
             port.BaudRate = boudTo;
             Console.WriteLine("Openning Port {0}, BoudRate {1}....", selectedport, boudTo);
