@@ -16,10 +16,9 @@ namespace NewModemBoudrateSwitcher
 
         private static SerialPort port;
         private string last_command;
+        private string modemanswer = "";
 
-        const int boudTo = 9600;
-
-        private ObservableCollection<int> _baudrates = new ObservableCollection<int>() { 115200, 9600 };
+        private ObservableCollection<int> _baudrates = new ObservableCollection<int>() { 9600,19200, 115200 };
         public ObservableCollection<int> BaudRates
         {
             get { return _baudrates; }
@@ -66,6 +65,13 @@ namespace NewModemBoudrateSwitcher
         {
             get { return text; }
             set { SetProperty(ref text, value); }
+        }
+
+        private bool _enablecombos = true;
+        public bool EnableCombos
+        {
+            get { return _enablecombos; }
+            set { SetProperty(ref _enablecombos, value); }
         }
 
         private Visibility _showextraactions = Visibility.Collapsed;
@@ -133,7 +139,8 @@ namespace NewModemBoudrateSwitcher
             {
                 Ports.Add(item);
             }
-            SelectedPort = Ports.FirstOrDefault();
+            string lastport = Properties.Settings.Default.LastPort;
+            SelectedPort = Ports.Where(x => x == lastport).FirstOrDefault() ?? Ports.FirstOrDefault();
         }
 
         private void ClosePort(object obj)
@@ -144,10 +151,13 @@ namespace NewModemBoudrateSwitcher
             Text += $"Closed\n";
             ShowClosePort = port.IsOpen ? Visibility.Visible : Visibility.Collapsed;
             ShowExtraActions = port.IsOpen ? Visibility.Visible : Visibility.Collapsed;
+            EnableCombos = port.IsOpen ? false : true;
         }
 
         private void OpenPort(object obj)
         {
+            Properties.Settings.Default.LastPort = SelectedPort;
+            Properties.Settings.Default.Save();
             port = new SerialPort();
             port.PortName = SelectedPort;
             port.BaudRate = SelectedBaudRate;
@@ -163,6 +173,7 @@ namespace NewModemBoudrateSwitcher
             port.Open();
             Text += $"Opened\n";
             ShowClosePort = port.IsOpen ? Visibility.Visible : Visibility.Collapsed;
+            EnableCombos = port.IsOpen ? false : true;
         }
 
         private void SendFunc(object obj)
@@ -197,6 +208,10 @@ namespace NewModemBoudrateSwitcher
                         Text += $"Sending {command} Command....\n";
                         port.WriteLine(command + "=1" + "\r");
                         break;
+                    case "AT+CFUN":
+                        Text += $"Sending {command} Command....\n";
+                        port.WriteLine(command + "=1" + "\r");
+                        break;
                     case "custum":
                     default:
                         if (string.IsNullOrEmpty(CustomCommand))
@@ -208,7 +223,6 @@ namespace NewModemBoudrateSwitcher
             }
         }
 
-        string modemanswer = "";
         private void Port_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             modemanswer += port.ReadExisting();
@@ -228,10 +242,15 @@ namespace NewModemBoudrateSwitcher
                     ShowSave = Visibility.Visible;
                     break;
                 case "AT^SCFG":
+                    SendFunc("AT+CFUN");
+                    break;
+                case "AT+CFUN":
                     SendFunc("AT^SLED");
                     break;
-                case "AT&W":
                 case "AT^SLED":
+                    ShowSave = Visibility.Visible;
+                    break;
+                case "AT&W":
                 default:
                     break;
             }
