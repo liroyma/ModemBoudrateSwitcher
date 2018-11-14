@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2050
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModemBoudrateSwitcher", "ModemBoudrateSwitcher\ModemBoudrateSwitcher.csproj", "{F85426DF-56E9-4D4E-B0E8-54B002D22660}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NewModemBoudrateSwitcher", "NewModemBoudrateSwitcher\NewModemBoudrateSwitcher.csproj", "{DE737E90-80E9-4D91-BDDB-1FF2F588E598}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,8 +17,15 @@ Global
 		{F85426DF-56E9-4D4E-B0E8-54B002D22660}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F85426DF-56E9-4D4E-B0E8-54B002D22660}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F85426DF-56E9-4D4E-B0E8-54B002D22660}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DE737E90-80E9-4D91-BDDB-1FF2F588E598}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DE737E90-80E9-4D91-BDDB-1FF2F588E598}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DE737E90-80E9-4D91-BDDB-1FF2F588E598}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DE737E90-80E9-4D91-BDDB-1FF2F588E598}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3D3CD0FC-5C49-4D7A-B8FD-F57952A9324A}
 	EndGlobalSection
 EndGlobal
