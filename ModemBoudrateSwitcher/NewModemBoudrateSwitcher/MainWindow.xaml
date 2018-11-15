@@ -7,7 +7,7 @@
         mc:Ignorable="d" DataContext="{DynamicResource Model}"
         Icon="favico.ico"
         Title="Modem Boudrate Switcher" Height="450" Width="800">
-    <Grid>
+    <Grid IsEnabled="{Binding EnableCommands}">
         <Grid.Resources>
             <Style TargetType="GroupBox">
                 <Setter Property="Padding" Value="5"></Setter>
@@ -26,7 +26,7 @@
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
         <GroupBox Grid.Column="0" Grid.Row="0" Header="Open Port">
-            <Grid>
+            <Grid Height="45" VerticalAlignment="Top" HorizontalAlignment="Center">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"></RowDefinition>
                     <RowDefinition Height="Auto"></RowDefinition>
@@ -39,28 +39,28 @@
                 </Grid.ColumnDefinitions>
                 <ComboBox Width="80" Grid.Row="0" Grid.Column="0" ItemsSource="{Binding Ports}" SelectedItem="{Binding SelectedPort}" IsEnabled="{Binding EnableCombos}"></ComboBox>
                 <ComboBox Width="80" Grid.Row="0" Grid.Column="1" ItemsSource="{Binding BaudRates}" SelectedItem="{Binding SelectedBaudRate}" IsEnabled="{Binding EnableCombos}"></ComboBox>
-                <Button Grid.Column="0" Grid.Row="1" Command="{Binding OpenCommand}" Content="Open" ></Button>
-                <Button Grid.Column="0" Grid.Row="1" Command="{Binding CloseCommand}" Content="Close" Visibility="{Binding ShowClosePort}"></Button>
-                <Button Grid.Column="1" CommandParameter="AT" Command="{Binding TestCommand}" Grid.Row="1" Content="Test"></Button>
-                <Button Grid.Column="0" Grid.ColumnSpan="2" CommandParameter="ATW" Command="{Binding TestCommand}" Grid.Row="2" Content="Save" Visibility="{Binding ShowSave}"></Button>
+                <Button Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Command="{Binding OpenCommand}" Content="Open" ></Button>
+                <Button Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Command="{Binding CloseCommand}" Content="Close" Visibility="{Binding ShowClosePort}"></Button>
             </Grid>
         </GroupBox>
-        <GroupBox Grid.Column="0" Grid.Row="1" Header="Change BoudRate" Visibility="{Binding ShowExtraActions}">
+        <GroupBox Grid.Column="0" Grid.Row="1" Header="Change BoudRate" Visibility="{Binding ShowClosePort}">
             <Grid>
                 <Grid.RowDefinitions>
+                    <RowDefinition></RowDefinition>
                     <RowDefinition></RowDefinition>
                     <RowDefinition></RowDefinition>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                 </Grid.ColumnDefinitions>
                 <ComboBox Width="80" Grid.Row="0" Grid.Column="1" ItemsSource="{Binding BaudRates}" SelectedItem="{Binding SelectedNewBaudRate}"></ComboBox>
-                <Button Grid.Row="1" CommandParameter="AT+IPR=" Command="{Binding TestCommand}" Content="Change BoudRate"></Button>
+                <Button Grid.Row="1" CommandParameter="BoudRate Only" Command="{Binding TestCommand}" Content="Change BoudRate"></Button>
+                <Button Grid.Row="2" CommandParameter="BoudRate And Configuration" Command="{Binding TestCommand}" Content="Change BoudRate And Configuration"></Button>
             </Grid>
         </GroupBox>
-        <GroupBox Grid.Column="0" Grid.Row="2" Header="Change Configuration" Visibility="{Binding ShowExtraActions}"  Margin="5">
-                <Button Grid.Row="1" CommandParameter="AT^SCFG" Command="{Binding TestCommand}" Content="Change Configuration"></Button>
+        <GroupBox Grid.Column="0" Grid.Row="2" Header="Change Configuration" Visibility="{Binding ShowClosePort}"  Margin="5">
+            <Button Grid.Row="1" CommandParameter="Configuration Only" Command="{Binding TestCommand}" Content="Change Configuration"></Button>
         </GroupBox>
-        <GroupBox Grid.Column="0" Grid.Row="3" Header="Custom Command" Visibility="{Binding ShowExtraActions}">
+        <GroupBox Grid.Column="0" Grid.Row="3" Header="Custom Command" Visibility="{Binding ShowClosePort}">
             <StackPanel>
                 <TextBox Text="{Binding CustomCommand}"></TextBox>
                 <Button Grid.Row="1" CommandParameter="custum" Command="{Binding TestCommand}" Content="Send Command"></Button>

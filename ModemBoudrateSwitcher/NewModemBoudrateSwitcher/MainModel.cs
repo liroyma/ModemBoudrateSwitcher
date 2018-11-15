@@ -8,17 +8,34 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Threading;
 
 namespace NewModemBoudrateSwitcher
 {
     public class MainModel : ViewModel
     {
+        private readonly string[] ChangeBaudrateCommand = new string[] { "AT+IPR=", "AT" };
+        private readonly string[] ChangeConfugurationCommand = new string[] { "AT^SCFG", "AT+CFUN", "AT^SLED", "AT" };
 
+        DispatcherTimer timer = new DispatcherTimer();
+
+        private void timer_Tick(object sender, EventArgs e)
+        {
+            Text += "\nNo Answer From Modem\n";
+            index = 0;
+            EnableCommands = true;
+            timer.Stop();
+        }
+
+        List<string> Commands = new List<string>();
+        int index = 0;
+
+        #region Properties
         private static SerialPort port;
         private string last_command;
         private string modemanswer = "";
 
-        private ObservableCollection<int> _baudrates = new ObservableCollection<int>() { 9600,19200, 115200 };
+        private ObservableCollection<int> _baudrates = new ObservableCollection<int>() { 9600, 19200, 115200 };
         public ObservableCollection<int> BaudRates
         {
             get { return _baudrates; }
@@ -57,7 +74,7 @@ namespace NewModemBoudrateSwitcher
         public string CustomCommand
         {
             get { return _customcommand; }
-            set { SetProperty(ref _customcommand, value);}
+            set { SetProperty(ref _customcommand, value); }
         }
 
         private string text = "";
@@ -74,13 +91,6 @@ namespace NewModemBoudrateSwitcher
             set { SetProperty(ref _enablecombos, value); }
         }
 
-        private Visibility _showextraactions = Visibility.Collapsed;
-        public Visibility ShowExtraActions
-        {
-            get { return _showextraactions; }
-            set { SetProperty(ref _showextraactions, value); }
-        }
-
         private Visibility _showcloseport = Visibility.Collapsed;
         public Visibility ShowClosePort
         {
@@ -88,12 +98,14 @@ namespace NewModemBoudrateSwitcher
             set { SetProperty(ref _showcloseport, value); }
         }
 
-        private Visibility _showsave = Visibility.Collapsed;
-        public Visibility ShowSave
+        private bool _enablecommand = true;
+        public bool EnableCommands
         {
-            get { return _showsave; }
-            set { SetProperty(ref _showsave, value); }
+            get { return _enablecommand; }
+            set { SetProperty(ref _enablecommand, value); }
         }
+
+        #endregion
 
         #region Commands
         private DelegateCommand _openCommand;
@@ -128,6 +140,8 @@ namespace NewModemBoudrateSwitcher
         public MainModel()
         {
             ReadPorts();
+            timer.Interval = TimeSpan.FromSeconds(3);
+            timer.Tick += timer_Tick;
         }
 
         private void ReadPorts()
@@ -150,7 +164,6 @@ namespace NewModemBoudrateSwitcher
             Thread.Sleep(1000);
             Text += $"Closed\n";
             ShowClosePort = port.IsOpen ? Visibility.Visible : Visibility.Collapsed;
-            ShowExtraActions = port.IsOpen ? Visibility.Visible : Visibility.Collapsed;
             EnableCombos = port.IsOpen ? false : true;
         }
 
@@ -180,46 +193,85 @@ namespace NewModemBoudrateSwitcher
         {
             if (obj is string command)
             {
-                last_command = command;
-                modemanswer = "";
+                Commands.Clear();
                 switch (command)
                 {
-                    case "AT":
-                        ShowExtraActions = Visibility.Collapsed;
-                        Text += $"Sending {command} Command....\n";
-                        port.WriteLine(command + "\r");
-                        break;
-                    case "AT+IPR=":
-                        Text += $"Sending {command} Command....\n";
-                        port.WriteLine(command + SelectedNewBaudRate + "\r");
-                        break;
-                    case "ATW":
-                        SendFunc("AT&W");
-                        break;
-                    case "AT&W":
-                        Text += $"Sending {command} Command....\n";
-                        port.WriteLine(command + "\r");
-                        break;
-                    case "AT^SCFG":
-                        Text += $"Sending {command} Command....\n";
-                        port.WriteLine(command + "=\"GPIO/mode/SYNC\", \"std\"" + "\r");
-                        break;
-                    case "AT^SLED":
-                        Text += $"Sending {command} Command....\n";
-                        port.WriteLine(command + "=1" + "\r");
-                        break;
-                    case "AT+CFUN":
-                        Text += $"Sending {command} Command....\n";
-                        port.WriteLine(command + "=1" + "\r");
-                        break;
                     case "custum":
-                    default:
-                        if (string.IsNullOrEmpty(CustomCommand))
-                            return;
-                        Text += $"Sending {CustomCommand} Command....\n";
-                        port.WriteLine(CustomCommand + "\r");
+                        Commands.Add(command);
+                        break;
+                    case "BoudRate Only":
+                        Commands.Add("AT");
+                        Commands.AddRange(ChangeBaudrateCommand);
+                        Commands.Add("AT&W");
+                        break;
+                    case "BoudRate And Configuration":
+                        Commands.Add("AT");
+                        Commands.AddRange(ChangeConfugurationCommand);
+                        Commands.AddRange(ChangeBaudrateCommand);
+                        Commands.Add("AT&W");
+                        break;
+                    case "Configuration Only":
+                        Commands.Add("AT");
+                        Commands.AddRange(ChangeConfugurationCommand);
+                        Commands.Add("AT&W");
                         break;
                 }
+                if (Commands.Count > 0)
+                {
+                    index = 0;
+                    EnableCommands = false;
+                    SendCommand();
+                }
+
+            }
+        }
+
+        private void SendCommand()
+        {
+            string command = Commands[index];
+            last_command = command;
+            modemanswer = "";
+            switch (last_command)
+            {
+                case "AT":
+                    Text += $"Sending {command} Command....\n";
+                    timer.Start();
+                    port.WriteLine(command + "\r");
+                    break;
+                case "AT+IPR=":
+                    Text += $"Sending {command} Command....\n";
+                    timer.Start();
+                    port.WriteLine(command + SelectedNewBaudRate + "\r");
+                    break;
+                case "AT&W":
+                    Text += $"Sending {command} Command....\n";
+                    timer.Start();
+                    port.WriteLine(command + "\r");
+                    break;
+                case "AT^SCFG":
+                    Text += $"Sending {command} Command....\n";
+                    timer.Start();
+                    port.WriteLine(command + "=\"GPIO/mode/SYNC\", \"std\"" + "\r");
+                    break;
+                case "AT^SLED":
+                    Thread.Sleep(1000);
+                    Text += $"Sending {command} Command....\n";
+                    timer.Start();
+                    port.WriteLine(command + "=1" + "\r");
+                    break;
+                case "AT+CFUN":
+                    Text += $"Sending {command} Command....\n";
+                    timer.Start();
+                    port.WriteLine(command + "=1,1" + "\r");
+                    break;
+                case "custum":
+                default:
+                    if (string.IsNullOrEmpty(CustomCommand))
+                        return;
+                    Text += $"Sending {CustomCommand} Command....\n";
+                    timer.Start();
+                    port.WriteLine(CustomCommand + "\r");
+                    break;
             }
         }
 
@@ -233,40 +285,46 @@ namespace NewModemBoudrateSwitcher
             switch (last_command)
             {
                 case "AT":
-                    ShowExtraActions = Visibility.Visible;
                     break;
                 case "AT+IPR=":
                     ClosePort(null);
                     SelectedBaudRate = SelectedNewBaudRate;
                     OpenPort(null);
-                    ShowSave = Visibility.Visible;
-                    break;
-                case "AT^SCFG":
-                    SendFunc("AT+CFUN");
                     break;
                 case "AT+CFUN":
-                    SendFunc("AT^SLED");
+                    Thread.Sleep(1000);
                     break;
+                case "AT^SCFG":
                 case "AT^SLED":
-                    ShowSave = Visibility.Visible;
-                    break;
                 case "AT&W":
                 default:
                     break;
+            }
+            index++;
+            if (index < Commands.Count)
+            {
+                SendCommand();
+            }
+            else
+            {
+                index = 0;
+                EnableCommands = true;
             }
         }
 
         private bool CheckAnswer(string modemanswer, out string answer)
         {
-            answer = modemanswer.Replace("\r","");
+            answer = modemanswer.Replace("\r", "");
             if (modemanswer.Contains("OK"))
             {
+                timer.Stop();
                 return true;
             }
             else if (modemanswer.Contains("ERROR"))
             {
                 Text += answer;
                 modemanswer = "";
+                timer.Stop();
                 return false;
             }
             return false;
