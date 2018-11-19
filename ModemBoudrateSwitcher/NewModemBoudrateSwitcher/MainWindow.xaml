@@ -18,54 +18,50 @@
             <ColumnDefinition Width="Auto"></ColumnDefinition>
             <ColumnDefinition></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"></RowDefinition>
-            <RowDefinition Height="Auto"></RowDefinition>
-            <RowDefinition Height="Auto"></RowDefinition>
-            <RowDefinition Height="Auto"></RowDefinition>
-            <RowDefinition Height="*"></RowDefinition>
-        </Grid.RowDefinitions>
-        <GroupBox Grid.Column="0" Grid.Row="0" Header="Open Port">
-            <Grid Height="45" VerticalAlignment="Top" HorizontalAlignment="Center">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"></RowDefinition>
-                    <RowDefinition Height="Auto"></RowDefinition>
-                    <RowDefinition Height="Auto"></RowDefinition>
-                    <RowDefinition Height="Auto"></RowDefinition>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"></ColumnDefinition>
-                    <ColumnDefinition Width="Auto"></ColumnDefinition>
-                </Grid.ColumnDefinitions>
-                <ComboBox Width="80" Grid.Row="0" Grid.Column="0" ItemsSource="{Binding Ports}" SelectedItem="{Binding SelectedPort}" IsEnabled="{Binding EnableCombos}"></ComboBox>
-                <ComboBox Width="80" Grid.Row="0" Grid.Column="1" ItemsSource="{Binding BaudRates}" SelectedItem="{Binding SelectedBaudRate}" IsEnabled="{Binding EnableCombos}"></ComboBox>
-                <Button Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Command="{Binding OpenCommand}" Content="Open" ></Button>
-                <Button Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Command="{Binding CloseCommand}" Content="Close" Visibility="{Binding ShowClosePort}"></Button>
-            </Grid>
-        </GroupBox>
-        <GroupBox Grid.Column="0" Grid.Row="1" Header="Change BoudRate" Visibility="{Binding ShowClosePort}">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition></RowDefinition>
-                    <RowDefinition></RowDefinition>
-                    <RowDefinition></RowDefinition>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                </Grid.ColumnDefinitions>
-                <ComboBox Width="80" Grid.Row="0" Grid.Column="1" ItemsSource="{Binding BaudRates}" SelectedItem="{Binding SelectedNewBaudRate}"></ComboBox>
-                <Button Grid.Row="1" CommandParameter="BoudRate Only" Command="{Binding TestCommand}" Content="Change BoudRate"></Button>
-                <Button Grid.Row="2" CommandParameter="BoudRate And Configuration" Command="{Binding TestCommand}" Content="Change BoudRate And Configuration"></Button>
-            </Grid>
-        </GroupBox>
-        <GroupBox Grid.Column="0" Grid.Row="2" Header="Change Configuration" Visibility="{Binding ShowClosePort}"  Margin="5">
-            <Button Grid.Row="1" CommandParameter="Configuration Only" Command="{Binding TestCommand}" Content="Change Configuration"></Button>
-        </GroupBox>
-        <GroupBox Grid.Column="0" Grid.Row="3" Header="Custom Command" Visibility="{Binding ShowClosePort}">
-            <StackPanel>
-                <TextBox Text="{Binding CustomCommand}"></TextBox>
-                <Button Grid.Row="1" CommandParameter="custum" Command="{Binding TestCommand}" Content="Send Command"></Button>
-            </StackPanel>
-        </GroupBox>
+        <DockPanel LastChildFill="False">
+            <GroupBox DockPanel.Dock="Top" Header="Open Port">
+                <Grid Height="45" VerticalAlignment="Top" HorizontalAlignment="Center">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"></ColumnDefinition>
+                        <ColumnDefinition Width="Auto"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <ComboBox Width="80" Grid.Row="0" Grid.Column="0" ItemsSource="{Binding Ports}" SelectedItem="{Binding SelectedPort}" IsEnabled="{Binding EnableCombos}"></ComboBox>
+                    <ComboBox Width="80" Grid.Row="0" Grid.Column="1" ItemsSource="{Binding BaudRates}" SelectedItem="{Binding SelectedBaudRate}" IsEnabled="{Binding EnableCombos}"></ComboBox>
+                    <Button Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Command="{Binding OpenCommand}" Content="Open" ></Button>
+                    <Button Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Command="{Binding CloseCommand}" Content="Close" Visibility="{Binding ShowClosePort}"></Button>
+                </Grid>
+            </GroupBox>
+            <GroupBox DockPanel.Dock="Top" Header="Change BoudRate" Visibility="{Binding ShowClosePort}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                    </Grid.ColumnDefinitions>
+                    <ComboBox Width="80" Grid.Row="0" Grid.Column="1" ItemsSource="{Binding BaudRates}" SelectedItem="{Binding SelectedNewBaudRate}"></ComboBox>
+                    <Button Grid.Row="1" CommandParameter="BoudRate Only" Command="{Binding TestCommand}" Content="Change BoudRate"></Button>
+                    <Button Grid.Row="2" CommandParameter="BoudRate And Configuration" Command="{Binding TestCommand}" Content="Change BoudRate And Configuration"></Button>
+                </Grid>
+            </GroupBox>
+            <GroupBox DockPanel.Dock="Top"  Header="Change Configuration" Visibility="{Binding ShowClosePort}"  Margin="5">
+                <Button Grid.Row="1" CommandParameter="Configuration Only" Command="{Binding TestCommand}" Content="Change Configuration"></Button>
+            </GroupBox>
+            <GroupBox DockPanel.Dock="Top" Header="Custom Command" Visibility="{Binding ShowClosePort}">
+                <StackPanel>
+                    <TextBox Text="{Binding CustomCommand}"></TextBox>
+                    <Button Grid.Row="1" CommandParameter="custum" Command="{Binding TestCommand}" Content="Send Command"></Button>
+                </StackPanel>
+            </GroupBox>
+            <Button DockPanel.Dock="Bottom" Content="Clear Log" Command="{Binding ClearCommand}"></Button>
+        </DockPanel>
         <ScrollViewer Grid.Column="1" Grid.RowSpan="5" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
             <TextBlock  Padding="10" Background="Black" Foreground="White"  Text="{Binding Text}"></TextBlock>
         </ScrollViewer>

@@ -108,6 +108,15 @@ namespace NewModemBoudrateSwitcher
         #endregion
 
         #region Commands
+             private DelegateCommand _clearCommand;
+        public DelegateCommand ClearCommand
+        {
+            get
+            {
+                return _clearCommand ?? (_clearCommand = new DelegateCommand((object obj)=> Text = string.Empty, (object obj) => true));
+            }
+        }
+
         private DelegateCommand _openCommand;
         public DelegateCommand OpenCommand
         {
