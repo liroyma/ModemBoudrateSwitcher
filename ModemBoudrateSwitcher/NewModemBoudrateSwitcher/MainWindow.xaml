@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:NewModemBoudrateSwitcher"
         mc:Ignorable="d" DataContext="{DynamicResource Model}"
         Icon="favico.ico"
-        Title="Modem Boudrate Switcher" Height="450" Width="800">
+        Title="Modem Boudrate Switcher" Height="500" Width="800">
     <Grid IsEnabled="{Binding EnableCommands}">
         <Grid.Resources>
             <Style TargetType="GroupBox">
@@ -53,6 +53,9 @@
             </GroupBox>
             <GroupBox DockPanel.Dock="Top"  Header="Change Configuration" Visibility="{Binding ShowClosePort}"  Margin="5">
                 <Button Grid.Row="1" CommandParameter="Configuration Only" Command="{Binding TestCommand}" Content="Change Configuration"></Button>
+            </GroupBox>
+            <GroupBox DockPanel.Dock="Top"  Header="Upgrade Revision" Visibility="{Binding ShowClosePort}"  Margin="5">
+                <Button Grid.Row="1" CommandParameter="Upgrade" Command="{Binding TestCommand}" Content="EHS6 REVISION 03.001"></Button>
             </GroupBox>
             <GroupBox DockPanel.Dock="Top" Header="Custom Command" Visibility="{Binding ShowClosePort}">
                 <StackPanel>
