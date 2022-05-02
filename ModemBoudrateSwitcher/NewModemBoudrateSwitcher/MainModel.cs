@@ -16,7 +16,7 @@ namespace NewModemBoudrateSwitcher
     {
         private readonly string[] ChangeBaudrateCommand = new string[] { "AT+IPR=", "AT" };
         private readonly string[] ChangeConfugurationCommand = new string[] { "AT^SCFG", "AT^SCFG-SYNC", "AT^SLED", "AT" };
-        private readonly string[] UpgradeCommand = new string[] { "AT^SCFG", "AT+CFUN-DTR0", "AT" };
+        private readonly string[] UpgradeCommand = new string[] { "AT^SCFG-DTR0", "AT+CFUN" };
 
         DispatcherTimer timer = new DispatcherTimer();
 
@@ -265,12 +265,12 @@ namespace NewModemBoudrateSwitcher
                 case "AT^SCFG-SYNC":
                     Text += $"Sending {command} Command....\n";
                     timer.Start();
-                    port.WriteLine(command + "=\"GPIO/mode/SYNC\", \"std\"" + "\r");
+                    port.WriteLine("AT^SCFG=\"GPIO/mode/SYNC\", \"std\"" + "\r");
                     break;
                 case "AT^SCFG-DTR0":
                     Text += $"Sending {command} Command....\n";
                     timer.Start();
-                    port.WriteLine(command + "=\"GPIO/mode/DTR0\", \"std\"" + "\r");
+                    port.WriteLine("AT^SCFG=\"GPIO/mode/DTR0\", \"std\"" + "\r");
                     break;
                 case "AT^SLED":
                     Thread.Sleep(1000);
@@ -344,7 +344,7 @@ namespace NewModemBoudrateSwitcher
                 Text += answer;
                 modemanswer = "";
                 timer.Stop();
-                return false;
+                return true;
             }
             return false;
 
