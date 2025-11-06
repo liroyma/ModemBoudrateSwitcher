@@ -30,7 +30,7 @@
     <ProductName>Modem Boudrate Switcher</ProductName>
     <PublisherName>Menorah</PublisherName>
     <WebPage>index.htm</WebPage>
-    <ApplicationRevision>7</ApplicationRevision>
+    <ApplicationRevision>9</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>true</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>

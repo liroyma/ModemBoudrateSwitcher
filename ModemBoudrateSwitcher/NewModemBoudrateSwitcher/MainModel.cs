@@ -36,6 +36,13 @@ namespace NewModemBoudrateSwitcher
         private string last_command;
         private string modemanswer = "";
 
+        private ObservableCollection<string> _savedcommands = new ObservableCollection<string>() { };
+        public ObservableCollection<string> SavedCommands
+        {
+            get { return _savedcommands; }
+            set { SetProperty(ref _savedcommands, value);  }
+        }
+
         private ObservableCollection<int> _baudrates = new ObservableCollection<int>() { 9600, 19200, 115200 };
         public ObservableCollection<int> BaudRates
         {
@@ -85,6 +92,13 @@ namespace NewModemBoudrateSwitcher
             set { SetProperty(ref text, value); }
         }
 
+        private int commandtimeout = 10;
+        public int CommandTimeout
+        {
+            get { return commandtimeout; }
+            set { SetProperty(ref commandtimeout, value); UpdateTimeout(); }
+        }
+
         private bool _enablecombos = true;
         public bool EnableCombos
         {
@@ -106,10 +120,17 @@ namespace NewModemBoudrateSwitcher
             set { SetProperty(ref _enablecommand, value); }
         }
 
+        private string _selectedcommand;
+        public string SelectedCommand
+        {
+            get { return _selectedcommand; }
+            set { SetProperty(ref _selectedcommand, value); CustomCommand = value; }
+        }
+
         #endregion
 
         #region Commands
-             private DelegateCommand _clearCommand;
+        private DelegateCommand _clearCommand;
         public DelegateCommand ClearCommand
         {
             get
@@ -145,13 +166,27 @@ namespace NewModemBoudrateSwitcher
             }
         }
 
+        private DelegateCommand _addcustomCommand;
+        public DelegateCommand AddCostumCommand
+        {
+            get
+            {
+                return _addcustomCommand ?? (_addcustomCommand = new DelegateCommand(AddCostum, (object obj) => true));
+            }
+        }       
+
         #endregion
 
         public MainModel()
         {
             ReadPorts();
-            timer.Interval = TimeSpan.FromSeconds(3);
+            CommandTimeout = Properties.Settings.Default.CommandTimeout;
+            timer.Interval = TimeSpan.FromSeconds(CommandTimeout);
             timer.Tick += timer_Tick;
+            var s = Properties.Settings.Default.SavedCommands;
+            foreach (var item in Properties.Settings.Default.SavedCommands.Split(';'))
+                if(!string.IsNullOrEmpty(item))
+                    SavedCommands.Add(item.Replace("[SPECIAL]", ";"));
         }
 
         private void ReadPorts()
@@ -228,6 +263,11 @@ namespace NewModemBoudrateSwitcher
                     case "Upgrade":
                         Commands.Add("AT");
                         Commands.AddRange(UpgradeCommand);
+                        break;
+                    case "delete":
+                        SavedCommands.Remove(SelectedCommand);
+                        Properties.Settings.Default.SavedCommands = string.Join(";", SavedCommands.Select(x => x.Replace(";", "[SPECIAL]")));
+                        Properties.Settings.Default.Save();
                         break;
                 }
                 if (Commands.Count > 0)
@@ -348,6 +388,24 @@ namespace NewModemBoudrateSwitcher
             }
             return false;
 
+        }
+
+        private void AddCostum(object obj)
+        {
+            if (!string.IsNullOrEmpty(CustomCommand) && !SavedCommands.Contains(CustomCommand))
+            {
+                //SavedCommands.Clear();
+                SavedCommands.Add(CustomCommand);
+                Properties.Settings.Default.SavedCommands = string.Join(";", SavedCommands.Select(x => x.Replace(";", "[SPECIAL]")));
+                Properties.Settings.Default.Save();
+            }
+        }
+
+        private void UpdateTimeout()
+        {
+            timer.Interval = TimeSpan.FromSeconds(CommandTimeout);
+            Properties.Settings.Default.CommandTimeout = CommandTimeout;
+            Properties.Settings.Default.Save();
         }
     }
 }

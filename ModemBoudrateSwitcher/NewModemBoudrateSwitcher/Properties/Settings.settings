@@ -5,5 +5,11 @@
     <Setting Name="LastPort" Type="System.String" Scope="User">
       <Value Profile="(Default)">COM9</Value>
     </Setting>
+    <Setting Name="SavedCommands" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="CommandTimeout" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">3</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

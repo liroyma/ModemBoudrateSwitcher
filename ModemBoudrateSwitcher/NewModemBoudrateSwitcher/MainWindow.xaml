@@ -15,10 +15,11 @@
             </Style>
         </Grid.Resources>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"></ColumnDefinition>
-            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition MinWidth="250" Width="*"></ColumnDefinition>
+            <ColumnDefinition Width="5"></ColumnDefinition>
+            <ColumnDefinition Width="4*"></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        <DockPanel LastChildFill="False">
+        <DockPanel Grid.Column="0" LastChildFill="False">
             <GroupBox DockPanel.Dock="Top" Header="Open Port">
                 <Grid Height="45" VerticalAlignment="Top" HorizontalAlignment="Center">
                     <Grid.RowDefinitions>
@@ -31,8 +32,8 @@
                         <ColumnDefinition Width="Auto"></ColumnDefinition>
                         <ColumnDefinition Width="Auto"></ColumnDefinition>
                     </Grid.ColumnDefinitions>
-                    <ComboBox Width="80" Grid.Row="0" Grid.Column="0" ItemsSource="{Binding Ports}" SelectedItem="{Binding SelectedPort}" IsEnabled="{Binding EnableCombos}"></ComboBox>
-                    <ComboBox Width="80" Grid.Row="0" Grid.Column="1" ItemsSource="{Binding BaudRates}" SelectedItem="{Binding SelectedBaudRate}" IsEnabled="{Binding EnableCombos}"></ComboBox>
+                    <ComboBox Grid.Row="0" Grid.Column="0" ItemsSource="{Binding Ports}" SelectedItem="{Binding SelectedPort}" IsEnabled="{Binding EnableCombos}"></ComboBox>
+                    <ComboBox  Grid.Row="0" Grid.Column="1" ItemsSource="{Binding BaudRates}" SelectedItem="{Binding SelectedBaudRate}" IsEnabled="{Binding EnableCombos}"></ComboBox>
                     <Button Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Command="{Binding OpenCommand}" Content="Open" ></Button>
                     <Button Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Command="{Binding CloseCommand}" Content="Close" Visibility="{Binding ShowClosePort}"></Button>
                 </Grid>
@@ -59,13 +60,33 @@
             </GroupBox>
             <GroupBox DockPanel.Dock="Top" Header="Custom Command" Visibility="{Binding ShowClosePort}">
                 <StackPanel>
-                    <TextBox Text="{Binding CustomCommand}"></TextBox>
-                    <Button Grid.Row="1" CommandParameter="custum" Command="{Binding TestCommand}" Content="Send Command"></Button>
+                    <Grid>
+                        <TextBox Text="{Binding CustomCommand}"></TextBox>
+                        <Button HorizontalAlignment="Right" Command="{Binding AddCostumCommand}" Content="+"></Button>
+                    </Grid>
+                    <Button CommandParameter="custum" Command="{Binding TestCommand}" Content="Send Command"></Button>
+                    <ListBox ItemsSource="{Binding SavedCommands}" SelectedItem="{Binding SelectedCommand}" MaxHeight="200"/>
+                    <Button CommandParameter="delete" Command="{Binding TestCommand}" Content="Delete Command">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Visibility" Value="Visible"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding SelectedCommand}" Value="{x:Null}">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
                 </StackPanel>
             </GroupBox>
             <Button DockPanel.Dock="Bottom" Content="Clear Log" Command="{Binding ClearCommand}"></Button>
+            <GroupBox DockPanel.Dock="Bottom"  Header="Command Timeout (second)" Margin="5">
+                <TextBox Text="{Binding CommandTimeout,UpdateSourceTrigger=LostFocus}"></TextBox>
+            </GroupBox>
         </DockPanel>
-        <ScrollViewer Grid.Column="1" Grid.RowSpan="5" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+        <GridSplitter ResizeDirection="Columns" Width="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"  Background="Black" Grid.Column="1"></GridSplitter>
+        <ScrollViewer Grid.Column="2" Grid.RowSpan="5" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
             <TextBlock  Padding="10" Background="Black" Foreground="White"  Text="{Binding Text}"></TextBlock>
         </ScrollViewer>
     </Grid>
